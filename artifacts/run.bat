@@ -1,0 +1,1 @@
+java -jar app-ibank.jar -P:profile=test
