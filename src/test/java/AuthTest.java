@@ -1,10 +1,6 @@
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.WebDriverRunner;
 import domain.RegistrationDto;
-import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.filter.log.LogDetail;
-import io.restassured.http.ContentType;
-import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,38 +9,14 @@ import repository.RegistrationDtoRepository;
 import java.time.Duration;
 
 import static com.codeborne.selenide.Selenide.*;
-import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AuthTest {
     private static RegistrationDtoRepository repository;
 
-    private RequestSpecification requestSpec = new RequestSpecBuilder()
-            .setBaseUri("http://localhost")
-            .setPort(9999)
-            .setAccept(ContentType.JSON)
-            .setContentType(ContentType.JSON)
-            .log(LogDetail.ALL)
-            .build();
-
-
-    RegistrationDto createUser(String status) {
-        RegistrationDto userInfo = repository.GetNewUser(status);
-        given()
-                .spec(requestSpec)
-                .body(userInfo)
-                .when()
-                .post("/api/system/users")
-                .then()
-                .statusCode(200);
-
-        return  userInfo;
-    }
-
     @Test
-    public void shouldNotLoginIfUserNotRegistered()
-    {
-        RegistrationDto userInfo = repository.GetNewUser("active");
+    public void shouldNotLoginIfUserNotRegistered() {
+        RegistrationDto userInfo = repository.getNewUser("active");
 
         $("[name='login']").setValue(userInfo.login);
         $("[name='password']").setValue(userInfo.password);
@@ -57,9 +29,8 @@ public class AuthTest {
     }
 
     @Test
-    public void shouldNotLoginIfUserBlocked()
-    {
-        RegistrationDto userInfo = createUser("blocked");
+    public void shouldNotLoginIfUserBlocked() {
+        RegistrationDto userInfo = repository.createUser("blocked");
 
         $("[name='login']").setValue(userInfo.login);
         $("[name='password']").setValue(userInfo.password);
@@ -71,12 +42,11 @@ public class AuthTest {
     }
 
     @Test
-    public void shouldNotLoginIfPasswordNotValid()
-    {
-        RegistrationDto userInfo = createUser("blocked");
+    public void shouldNotLoginIfPasswordNotValid() {
+        RegistrationDto userInfo = repository.createUser("blocked");
 
         $("[name='login']").setValue(userInfo.login);
-        $("[name='password']").setValue(userInfo.password+"123");
+        $("[name='password']").setValue(repository.getPassword());
         $("[data-test-id='action-login']").click();
 
         $("[data-test-id='error-notification']")
@@ -85,9 +55,8 @@ public class AuthTest {
     }
 
     @Test
-    public void shouldLoginIfUserRegistered()
-    {
-        RegistrationDto userInfo = createUser("active");
+    public void shouldLoginIfUserRegistered() {
+        RegistrationDto userInfo = repository.createUser("active");
 
         $("[name='login']").setValue(userInfo.login);
         $("[name='password']").setValue(userInfo.password);
@@ -104,7 +73,7 @@ public class AuthTest {
 
     @BeforeAll
     public static void init() {
-       repository = new RegistrationDtoRepository();
+        repository = new RegistrationDtoRepository();
     }
 
 
