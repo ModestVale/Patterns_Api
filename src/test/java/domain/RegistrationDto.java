@@ -1,8 +1,8 @@
 package domain;
 
-import lombok.Data;
+import lombok.Value;
 
-@Data
+@Value
 public class RegistrationDto {
     public  RegistrationDto(String login, String password, String status)
     {

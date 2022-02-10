@@ -30,6 +30,10 @@ public class RegistrationDtoRepository {
         return faker.internet().password();
     }
 
+    public static String getLogin() {
+        return faker.regexify("[A-Za-z]{4,10}");
+    }
+
 
     private static RequestSpecification requestSpec = new RequestSpecBuilder()
             .setBaseUri("http://localhost")
