@@ -6,33 +6,32 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
+import lombok.experimental.UtilityClass;
 
 import java.util.Locale;
 
 import static io.restassured.RestAssured.given;
 
+@UtilityClass
 public class RegistrationDtoRepository {
 
-    private Faker faker;
+    private static Faker faker = new Faker(new Locale("ru"));
 
-    public RegistrationDtoRepository() {
-        faker = new Faker(new Locale("ru"));
-    }
-
-    public RegistrationDto getNewUser(String status) {
-        RegistrationDto user = new RegistrationDto();
-        user.login = faker.regexify("[A-Za-z]{4,10}");
-        user.password = faker.internet().password();
-        user.status = status;
+    public static RegistrationDto getNewUser(String status) {
+        RegistrationDto user = new RegistrationDto(
+                faker.regexify("[A-Za-z]{4,10}"),
+                faker.internet().password(),
+                status
+                );
         return user;
     }
 
-    public String getPassword() {
+    public static String getPassword() {
         return faker.internet().password();
     }
 
 
-    private RequestSpecification requestSpec = new RequestSpecBuilder()
+    private static RequestSpecification requestSpec = new RequestSpecBuilder()
             .setBaseUri("http://localhost")
             .setPort(9999)
             .setAccept(ContentType.JSON)
@@ -41,8 +40,8 @@ public class RegistrationDtoRepository {
             .build();
 
 
-    public RegistrationDto createUser(String status) {
-        RegistrationDto userInfo = this.getNewUser(status);
+    public static RegistrationDto createUser(String status) {
+        RegistrationDto userInfo = getNewUser(status);
         given()
                 .spec(requestSpec)
                 .body(userInfo)

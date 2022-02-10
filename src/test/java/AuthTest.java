@@ -18,8 +18,8 @@ public class AuthTest {
     public void shouldNotLoginIfUserNotRegistered() {
         RegistrationDto userInfo = repository.getNewUser("active");
 
-        $("[name='login']").setValue(userInfo.login);
-        $("[name='password']").setValue(userInfo.password);
+        $("[name='login']").setValue(userInfo.getLogin());
+        $("[name='password']").setValue(userInfo.getPassword());
         $("[data-test-id='action-login']").click();
 
         String text = $("[data-test-id='error-notification']").getValue();
@@ -32,8 +32,8 @@ public class AuthTest {
     public void shouldNotLoginIfUserBlocked() {
         RegistrationDto userInfo = repository.createUser("blocked");
 
-        $("[name='login']").setValue(userInfo.login);
-        $("[name='password']").setValue(userInfo.password);
+        $("[name='login']").setValue(userInfo.getLogin());
+        $("[name='password']").setValue(userInfo.getPassword());
         $("[data-test-id='action-login']").click();
 
         $("[data-test-id='error-notification']")
@@ -45,7 +45,7 @@ public class AuthTest {
     public void shouldNotLoginIfPasswordNotValid() {
         RegistrationDto userInfo = repository.createUser("blocked");
 
-        $("[name='login']").setValue(userInfo.login);
+        $("[name='login']").setValue(userInfo.getLogin());
         $("[name='password']").setValue(repository.getPassword());
         $("[data-test-id='action-login']").click();
 
@@ -58,8 +58,8 @@ public class AuthTest {
     public void shouldLoginIfUserRegistered() {
         RegistrationDto userInfo = repository.createUser("active");
 
-        $("[name='login']").setValue(userInfo.login);
-        $("[name='password']").setValue(userInfo.password);
+        $("[name='login']").setValue(userInfo.getLogin());
+        $("[name='password']").setValue(userInfo.getPassword());
         $("[data-test-id='action-login']").click();
 
         String currentUrl = WebDriverRunner.getWebDriver().getCurrentUrl();
@@ -70,11 +70,4 @@ public class AuthTest {
     public void openBrowser() {
         open("http://localhost:9999");
     }
-
-    @BeforeAll
-    public static void init() {
-        repository = new RegistrationDtoRepository();
-    }
-
-
 }
